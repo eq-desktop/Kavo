@@ -1,0 +1,29 @@
+{
+  "name": "kavo",
+  "version": "0.1.0",
+  "description": "A declarative, hierarchical format for defining modular data and components in a human- and machine-readable way.",
+  "main": "main.js",
+  "scripts": {
+    "test": "node tests/test.js",
+    "start": "node main.js example.kvo"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eq-desktop/Kavo.git"
+  },
+  "type": "module",
+  "keywords": [
+    "DSL",
+    "parser",
+    "AST",
+    "config",
+    "json",
+    "aureli"
+  ],
+  "author": "Jonas Schmidt",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/eq-desktop/Kavo/issues"
+  },
+  "homepage": "https://github.com/eq-desktop/Kavo#readme"
+}
