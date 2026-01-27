@@ -10,7 +10,7 @@ function parseFile(file) {
 function newPart({
     name = "",
     kind = "object",
-    type = "KantaraObject",
+    type = "KavoObject",
     children = [],
     args = [],
     value = null,
@@ -116,7 +116,7 @@ function parse(data, parent = null, options = { allowImports: false }) {
                 root.children.push(newPart({
                     name: filePath,
                     kind: "import",
-                    type: "KantaraImport",
+                    type: "KavoImport",
                     value: filePath
                 }));
             }
@@ -132,7 +132,7 @@ function parse(data, parent = null, options = { allowImports: false }) {
                 .map(a => a.trim())
                 .filter(Boolean);
 
-            const node = newPart({ name, kind: "function", type: "KantaraFunction", args });
+            const node = newPart({ name, kind: "function", type: "KavoFunction", args });
 
             if (!line.includes("{")) i++;
             const { body, endIndex } = scanBlock(lines, i + 1);
@@ -149,7 +149,7 @@ function parse(data, parent = null, options = { allowImports: false }) {
                 .slice(name.length)
                 .replace(/[{}]/g, "")   // remove BOTH braces
                 .trim();
-            const node = newPart({ name, kind: "section", type: "KantaraSection" });
+            const node = newPart({ name, kind: "section", type: "KavoSection" });
 
             if (propString) {
                 node.properties = parseInlineProps(propString);
@@ -251,7 +251,7 @@ function parseInlineProps(str) {
 }
 
 /* ----------------------------- Helper class ----------------------------- */
-class KtaNode {
+class KvoNode {
     constructor(obj) {
         this._obj = obj;
     }
@@ -261,9 +261,9 @@ class KtaNode {
         return this._obj;
     }
 
-    // Get children as KtaNode instances
+    // Get children as KvoNode instances
     get children() {
-        return (this._obj.children || []).map(c => new KtaNode(c));
+        return (this._obj.children || []).map(c => new KvoNode(c));
     }
 
     // Find first child by name
@@ -317,7 +317,7 @@ class KtaNode {
     /**
      * Navigate the tree by a dot-separated path
      * e.g. "sections.toggles.subSection.key"
-     * Returns the KtaNode or property value
+     * Returns the KvoNode or property value
      */
     navigate(path) {
         if (!path) return this;

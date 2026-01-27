@@ -11,7 +11,7 @@ sections "string flags with spaces" flags {
         prop: "hey"
     }
 
-    @import nonfinal "./test.kta"
+    @import nonfinal "./test.kvo"
 
     sectionsWith prop: "erties" and flags times: 100 {}
 
