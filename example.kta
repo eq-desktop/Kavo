@@ -1,0 +1,22 @@
+sections "string flags with spaces" flags {
+    // Comments
+    subSections {
+        properties: /*Comment*/ "Strings with spaces"
+        property: 100
+        anotherProperty: true
+        yetAnotherProperty: false
+    }
+
+    toggles {
+        prop: "hey"
+    }
+
+    @import nonfinal "./test.kta"
+
+    sectionsWith prop: "erties" and flags times: 100 {}
+
+    literalFunctions(with, arguments) {
+        yes_really();
+    }
+}
+

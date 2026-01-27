@@ -1,0 +1,44 @@
+plugin "supercoolaureliplugin" {
+
+    meta {
+        name: "Super Cool Aureli Plugin"
+        version: "0.1.0"
+        api: "Elephant-27"
+        description: "This is a super cool Aureli plugin"
+        author: "Author"
+        key: "supercoolaurelipluginsecretkey1234567890"
+    }
+
+    config defaults {
+        welcomeMessage: "Hello World"
+    }
+
+    onSystemPreLoadingConfig(config) {
+        if config.plugins.supercoolaureliplugin == null {
+            config.plugins.supercoolaureliplugin = defaults
+        }
+    }
+
+    widget {
+        meta {
+            name: "Super Cool Aureli Widget"
+        }
+        onRender(canvas, data, config) {
+            if data.size == "2x3" return
+
+            canvas.drawText({
+                text: config.welcomeMessage,
+                alignment: "center-center",
+                color: "#fff"
+            })
+        }
+
+        onPlacement(data) {
+            data.allow()
+        }
+    }
+
+    onSystemDoneLoading(logger, config) {
+        logger.info(config.welcomeMessage)
+    }
+}
