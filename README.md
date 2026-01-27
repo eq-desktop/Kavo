@@ -74,6 +74,168 @@ Each node is **self-contained** and **flexibly composable**, supporting clear an
 
 ---
 
+## Guide
+
+### Parts
+
+A **part** is the fundamental building block. Every part can have:
+
+* A **name**
+* A **kind** (type of part: `object`, `section`, `property`, `function`, `import`)
+* Optional **arguments**
+* Optional **value**
+* Optional **properties**
+* Optional **children**
+
+**Syntax Example:**
+
+```kvo
+object "RootPart" {
+    value: true
+    property1: "example"
+}
+```
+
+* `object "RootPart"` → a named part of kind `object`
+* `value` → optional value for the part
+* `property1` → a property inside the part
+
+---
+
+### Properties
+
+**Properties** are key-value pairs associated with a part.
+
+**Syntax:**
+
+```kvo
+propertyName: "stringValue"
+anotherProperty: 42
+flagProperty: true
+```
+
+* Values can be **strings**, **numbers**, or **booleans**
+* Properties can exist inside **any part**
+
+---
+
+### Nested Children
+
+Parts can contain **nested children**, forming a hierarchical tree:
+
+```kvo
+section "ParentSection" {
+    propertyA: true
+    section "ChildSection" {
+        propertyB: "value"
+    }
+}
+```
+
+* The root part contains a child section
+* Child sections can themselves contain **properties or further nested children**
+
+---
+
+### Sections
+
+**Sections** are parts intended to group related data or parts together:
+
+```kvo
+sections "FeatureFlags" flags {
+    enableBeta: true
+    enableLogging: false
+}
+```
+
+* `"FeatureFlags"` → flag being a string, useful for namespacing
+* `flags` → flag properties
+* Sections can contain **properties, subsections, or child parts**
+
+---
+
+### Functions
+
+Functions are **parts representing executable blocks**:
+
+```kvo
+literalFunctions(showMessage, times) {
+    repeat(times) {
+        console.log(showMessage)
+    }
+}
+```
+
+* Arguments are defined in parentheses
+* Body is enclosed in `{ ... }`
+* Functions can be nested inside parts or sections
+
+---
+
+### Imports
+
+Kavo supports **modularization via imports**:
+
+```kvo
+import "common.kvo"           # inline contents at this location
+import nonfinal "defaults.kvo"  # reference to another file
+```
+
+* **Reference import** → `kind: import`, stores only the filename
+* **Inline import** → parsed immediately and injected into the current tree
+
+---
+
+### Literals & Values
+
+Parts and properties can store:
+
+* **Strings**: `"Hello World"`
+* **Numbers**: `26`
+* **Booleans**: `true` / `false`
+
+Example:
+
+```kvo
+timeout: 100
+message: "Hello"
+```
+
+---
+
+### Hierarchical Composition
+
+Kavo encourages **tree-like modular structures**:
+
+```
+RootPart
+├─ SectionA
+│  ├─ Property1
+│  └─ ChildSection
+└─ SectionB
+   └─ Function
+```
+
+* Every part can have **children, properties, and arguments**
+* Deep hierarchies are fully supported
+
+---
+
+### Comments
+
+Kavo supports comments:
+
+```kvo
+// Single-line comment
+/* Multi-line
+   comment */
+```
+
+* Comments are ignored by the parser
+* Can appear anywhere in the file
+
+---
+
 ## ⚖️ License
 
 This project is released under the APACHE-2.0 License.
