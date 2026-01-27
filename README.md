@@ -177,8 +177,8 @@ literalFunctions(showMessage, times) {
 Kavo supports **modularization via imports**:
 
 ```kvo
-import "common.kvo"           # inline contents at this location
-import nonfinal "defaults.kvo"  # reference to another file
+@import "common.kvo"           # inline contents at this location
+@import nonfinal "defaults.kvo"  # reference to another file
 ```
 
 * **Reference import** → `kind: import`, stores only the filename
