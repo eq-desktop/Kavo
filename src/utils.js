@@ -1,14 +1,18 @@
-import fs from "fs";
+let UUID = 0;
+
 function newPart({
     name = "",
     kind = "object",
     type = "KavoObject",
     children = [],
+    path = "",
+    id = null,
     args = [],
     value = null,
     properties = {}
 } = {}) {
-    return { name, kind, type, arguments: args, value, properties, children };
+    if (!id) id = UUID++;
+    return { name, kind, type, id, arguments: args, path, value, properties, children };
 }
 
 function stripComments(src) {
@@ -80,11 +84,10 @@ function parseValue(raw) {
 
 /* ------------------------------- PARSER ------------------------------- */
 
-function parse(data, parent = null, options = { allowImports: false }) {
-    let allowImports = options.allowImports;
+function parse(data, parent = null) {
     data = stripComments(data);
     const lines = data.split("\n");
-    const root = parent || newPart({ name: "root" });
+    const root = parent || newPart({ name: "root", path: "root" });
 
     for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
@@ -95,23 +98,17 @@ function parse(data, parent = null, options = { allowImports: false }) {
             const inlineMode = line.startsWith("@import nonfinal ");
             const filePath = line.split(/import(?: nonfinal)?\s+/)[1].replace(/["']/g, "").trim();
 
-            if (allowImports && !inlineMode) {
-                // Read and parse the imported file immediately
-                const importedData = fs.readFileSync(filePath, "utf-8");
-                let importedNode = parse(importedData, null, options); // recursive parse with same options
-                // Inject children of imported node into current object
-                if (importedNode.children) {
-                    root.children.push(...importedNode.children);
-                }
-            } else {
-                // Just store as an import reference
-                root.children.push(newPart({
-                    name: filePath,
-                    kind: "import",
-                    type: "KavoImport",
-                    value: filePath
-                }));
-            }
+            let newNode = newPart({
+                name: "import:Unkown",
+                kind: "import",
+                path: `${root.path}.${"import:Unkown"}`,
+                type: "KavoImport",
+                value: filePath
+            });
+            newNode.name = "import:" + newNode.id;
+            newNode.path = `${root.path}.${newNode.name}`;
+
+            root.children.push(newNode);
 
             continue;
         }
@@ -124,7 +121,7 @@ function parse(data, parent = null, options = { allowImports: false }) {
                 .map(a => a.trim())
                 .filter(Boolean);
 
-            const node = newPart({ name, kind: "function", type: "KavoFunction", args });
+            const node = newPart({ name, kind: "function", path: `${root.path}.${name}`, type: "KavoFunction", args });
 
             if (!line.includes("{")) i++;
             const { body, endIndex } = scanBlock(lines, i + 1);
@@ -141,14 +138,14 @@ function parse(data, parent = null, options = { allowImports: false }) {
                 .slice(name.length)
                 .replace(/[{}]/g, "")   // remove BOTH braces
                 .trim();
-            const node = newPart({ name, kind: "section", type: "KavoSection" });
+            const node = newPart({ name, kind: "section", path: `${root.path}.${name}`, type: "KavoSection" });
 
             if (propString) {
                 node.properties = parseInlineProps(propString);
             }
 
             const { body, endIndex } = scanBlock(lines, i + 1);
-            parse(body, node, options);
+            parse(body, node);
             root.children.push(node);
             i = endIndex;
             continue;
@@ -161,6 +158,7 @@ function parse(data, parent = null, options = { allowImports: false }) {
             root.children.push(newPart({
                 name: k.trim(),
                 kind: "property",
+                path: `${root.path}.${k.trim()}`,
                 type,
                 value
             }));
